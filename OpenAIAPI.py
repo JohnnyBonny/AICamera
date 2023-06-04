@@ -1,3 +1,4 @@
+import os
 from datetime import date
 import openai
 import requests
@@ -47,12 +48,13 @@ messages.append({"role": "assistant", "content": reply})
 replies = reply.replace("](", "__").replace(")", "__").replace("\n", "").split("__")
 
 Image_url = ""
+Image_desc_data = ""
 
 # to verify if the Image_url is in the replies array
 try:
     Image_url = replies[1]
     if "http" in Image_url:
-        Image_desc = replies[2]
+        Image_desc_data = replies[2]
     else:
         print(reply)
         exit()
@@ -66,7 +68,7 @@ del messages
 del message
 
 # updates the location variable so that we can name the file after the location
-location = location.replace(" ", "_").replace("#", "_").replace("'", "").replace(",", "").replace(".", "")
+location = location.replace(" ", "_").replace("#", "_").replace("'", "").replace(",", "_").replace(".", "")
 
 # checks to see if the url is valid
 try:
@@ -81,8 +83,22 @@ img_data = requests.get(Image_url).content
 
 today = date.today()
 formatted_date = today.strftime("%b_%d_%Y")
-file_name = f'{location}_{formatted_date}.jpg'
+
+Image_file_name = f'{location}_{formatted_date}.jpg'
+Image_desc_file_name = f'{location}_{formatted_date}_desc.txt'
+
+# creates the path to store the files
+directory = "OutputFiles"
+Image_file_path = os.path.join(os.getcwd(), directory, Image_file_name)
+Image_file_desc_path = os.path.join(os.getcwd(), directory, Image_desc_file_name)
 
 # if the file is there, overwrite. If not, create the file
-with open(file_name, 'wb') as handler:
+with open(Image_file_path, 'wb') as handler:
     handler.write(img_data)
+    handler.close()
+
+with open(Image_file_desc_path, 'w') as handler:
+    handler.write(Image_desc_data)
+    handler.close()
+
+#return file_name, Image_desc
