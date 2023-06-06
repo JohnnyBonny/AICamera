@@ -12,24 +12,44 @@ openai.api_key = ''
 
 # Initializes chat with chatgpt
 messages = [
-    {"role": "system", "content": "Create an image. After the image is created, generate a detailed, 5 sentence story "
+    {"role": "system", "content": "Create an image and generate a detailed, 5 sentence story "
                                   "of the image in first person. But ONLY output your response as an array. With the "
                                   "first index "
                                   "being the link to the image, and the second index being the story.You have to "
                                   "format your "
-                                  "response like exactly like this example ['image link'__story]. use the __ to "
-                                  "instead of , to separate the index"},
+                                  "response like EXACTLY like this example [image link || story]. Use the || symbols"
+                                  "instead of , to separate the index. And there should be a space inbetween the || "
+                                  "and the values"},
 
 ]
 
 now = datetime.now()
-current_time = now.strftime("%H:%M")
+
+
+def get_time_of_day(time):
+    if time > 19 or time < 4:
+        return "Night"
+    elif time < 12:
+        return "morning"
+    elif time == 12:
+        return "Noon"
+    elif time < 16:
+        return "Afternoon"
+    else:
+        return "Evening"
+
+
+time_of_day = get_time_of_day(now.hour)
+current_time = now.strftime("%H:%M %p")
+
+today = date.today()
+formatted_date = today.strftime("%b_%d_%Y")
 
 
 # the fields used to help create the image
 def createMessage(adjective1, adjective2, visualStyle1, visualStyle2, artistReference):
-    INPUT = f"INPUT = {location_name} taken with a film camera."
-    OUTPUT = f"\nOUTPUT = {location_weather_description}_{location_temperature}_degrees_taken_at_{current_time},{adjective1},{adjective2},{visualStyle1},{visualStyle2},{artistReference} "
+    INPUT = f"INPUT = A {time_of_day} photo taken at {location_name}. The date is {today}."
+    OUTPUT = f"\nOUTPUT = street view image of the location,{adjective1},{adjective2},{visualStyle1},{visualStyle2},{artistReference} "
     return INPUT, OUTPUT
 
 
@@ -58,7 +78,7 @@ print(reply)
 messages.append({"role": "assistant", "content": reply})
 
 # in order to split the information in the reply to return the location and the description of the image
-replies = reply.replace("['", "").replace("',", "__").replace("']", "").split("__")
+replies = reply.replace("[", "").replace(". _", "").replace("']", "").split("||")
 
 Image_url = ""
 Image_desc_data = ""
@@ -96,9 +116,6 @@ except requests.exceptions.MissingSchema as e:
 
 # grabs the image as bytes
 img_data = requests.get(Image_url).content
-
-today = date.today()
-formatted_date = today.strftime("%b_%d_%Y")
 
 Image_file_name = f'{location_name}_{formatted_date}.jpg'
 Image_desc_file_name = f'{location_name}_{formatted_date}_desc.txt'

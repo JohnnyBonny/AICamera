@@ -5,10 +5,10 @@ print(location_name)
 print(location_temperature)
 print(location_weather_description)
 
-adjective1Input = "night"
-adjective2Input = "street_view"
+adjective1Input = "silent"
+adjective2Input = "lonely"
 visualStyle1Input = "Filmy"
-visualStyle2Input = "realistic"
+visualStyle2Input = "night"
 artistReferenceInput = ""
 
 
