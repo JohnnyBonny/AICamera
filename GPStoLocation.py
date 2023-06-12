@@ -5,8 +5,8 @@ import requests
 
 # 33.78400047017209, -118.11419790073333 CSULB
 37.80897793726442, -122.4122598135595
-latitude = 37.80897793726442
-longitude = -122.4122598135595
+latitude = 33.838614
+longitude =  -118.376501
 
 # API used to convert the GPS coordinates to a human-readable location
 Positionstack_API_Key = ""

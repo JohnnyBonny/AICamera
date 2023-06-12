@@ -1,11 +1,11 @@
 import os
-from datetime import date
+from datetime import date, datetime
 import openai
 import requests
-from datetime import datetime
 from GPStoLocation import location_name, location_weather_description, location_temperature
-from functionsTest import adjective1Input, adjective2Input, visualStyle1Input, visualStyle2Input, \
-    artistReferenceInput
+# from functionsTest import adjective1Input, adjective2Input, visualStyle1Input, visualStyle2Input, \
+# artistReferenceInput
+from YelpAPI import businesses_nearby
 
 # insert your API KEY from openAI
 openai.api_key = ''
@@ -47,14 +47,21 @@ formatted_date = today.strftime("%b_%d_%Y")
 
 
 # the fields used to help create the image
-def createMessage(adjective1, adjective2, visualStyle1, visualStyle2, artistReference):
-    INPUT = f"INPUT = A {time_of_day} photo taken at {location_name}. The date is {today}."
-    OUTPUT = f"\nOUTPUT = street view image of the location,{adjective1},{adjective2},{visualStyle1},{visualStyle2},{artistReference} "
+def createMessage():
+    if time_of_day == "Night":
+        INPUT = f"INPUT = {location_name} taken with a scenic, dark night sky."
+        OUTPUT = f"\nOUTPUT = {location_name} photo at night at {current_time} on {formatted_date}, There was a dark " \
+                 f"night time sky,There is a {businesses_nearby[0]} and a {businesses_nearby[1]} nearby,The weather " \
+                 f"was {location_weather_description}."
+    else:
+        INPUT = f"INPUT = {location_name} taken with a scenic, {time_of_day} sky."
+        OUTPUT = f"\nOUTPUT = {location_name} photo at {time_of_day} at {current_time} on {formatted_date}, There was a " \
+                 f"{time_of_day} sky, There is a {businesses_nearby[0]} and a {businesses_nearby[1]} nearby, The weather " \
+                 f"was {location_weather_description}."
     return INPUT, OUTPUT
 
 
-User_Message = createMessage(adjective1Input, adjective2Input, visualStyle1Input, visualStyle2Input,
-                             artistReferenceInput)
+User_Message = createMessage()
 
 User_Message_INPUT = User_Message[0]
 User_Message_OUTPUT = User_Message[1]
@@ -74,7 +81,7 @@ if message:
     )
 
 reply = chat.choices[0].message.content
-print(reply)
+#print(reply)
 messages.append({"role": "assistant", "content": reply})
 
 # in order to split the information in the reply to return the location and the description of the image
